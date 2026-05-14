@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard Jurídico v2 — H.A. Advocacia</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--pm:#378ADD;--pm-bg:#E6F1FB;--pm-t:#042C53;--pm-m:#0C447C;--pm-l:#85B7EB;
+--ps:#D85A30;--ps-bg:#FAECE7;--ps-t:#712B13;--ps-m:#993C1D;--ps-l:#F0997B;
+--jr:#7F77DD;--jr-bg:#EEEDFE;--jr-t:#3C3489;--jr-m:#534AB7;--jr-l:#AFA9EC;
+--ct:#1D9E75;--ct-bg:#E1F5EE;--ct-t:#085041;--ct-m:#0F6E56;--ct-l:#5DCAA5;
+--dn:#E24B4A;--dn-bg:#FCEBEB;--dn-t:#791F1F;
+--wn:#EF9F27;--wn-bg:#FAEEDA;--wn-t:#854F0B;
+--ok:#639922;--ok-bg:#EAF3DE;--ok-t:#27500A;
+--pk:#D4537E;--pk-bg:#FBEAF0;--pk-t:#72243E;
+--pj:#8B5CF6;--pj-bg:#F3F0FF;--pj-t:#4C1D95;--pj-m:#6D28D9;
+--gr:#888780;--gr-bg:#F1EFE8;--gr-t:#444441;
+--bd:#E7E5E4;--cb:#F7F7F6;--t1:#1C1917;--t2:#78716C;--t3:#A8A29E;--bg:#FAFAF9
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t1);padding:0;max-width:1100px;margin:0 auto;font-size:13px;line-height:1.5}
+.hdr{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--bd);padding:10px 14px 0}
+.hdr-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#378ADD,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0}
+.hdr h1{font-size:16px;font-weight:700}
+.hdr h1 span{font-size:11px;font-weight:500;color:var(--ok);margin-left:6px}
+.hdr p{font-size:11px;color:var(--t2)}
+.hdr-actions{margin-left:auto;display:flex;gap:6px}
+.btn-export{background:var(--ct);color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer}
+.btn-export:hover{background:var(--ct-m)}
+.tabs{display:flex;gap:0;border-bottom:none;overflow-x:auto;flex-wrap:wrap}
+.tab{padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--t3);border-bottom:3px solid transparent;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.tab:hover{color:var(--t1);background:var(--cb)}
+.tab.active{border-bottom-color:var(--accent);color:var(--accent)}
+.tab .cnt{font-size:10px;font-weight:600;padding:1px 6px;border-radius:8px;background:var(--tab-bg);color:var(--tab-c)}
+.tab.danger .cnt{background:var(--dn-bg);color:var(--dn-t)}
+.content{padding:12px 14px 40px;display:none}
+.content.active{display:block}
+.section-title{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin:14px 0 6px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--bd)}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:10px}
+.mc{background:var(--cb);border-radius:8px;padding:10px 12px;border-left:3px solid var(--c,var(--gr))}
+.mc.danger{background:var(--dn-bg);border-color:var(--dn)}
+.mc.warn{background:var(--wn-bg);border-color:var(--wn)}
+.mc.ok{background:var(--ok-bg);border-color:var(--ok)}
+.mc.info{background:var(--pm-bg);border-color:var(--pm)}
+.mc.judicial{background:var(--jr-bg);border-color:var(--jr)}
+.mc label{font-size:10px;color:var(--t2);font-weight:600;display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px}
+.mc .val{font-size:22px;font-weight:700;line-height:1}
+.mc .sub{font-size:10px;color:var(--t2);margin-top:3px}
+
+.species-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
+.sc{padding:10px 12px;border-radius:8px;border-left:3px solid var(--c);cursor:pointer;transition:transform .15s, box-shadow .15s;background:var(--bg-c)}
+.sc:hover{transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+.sc.active{box-shadow:0 0 0 2px var(--c)}
+.sc-label{font-size:11px;font-weight:600;color:var(--t-c);margin-bottom:3px}
+.sc-val{font-size:20px;font-weight:700;color:var(--t-c);line-height:1}
+.sc-bar{height:4px;background:rgba(0,0,0,0.08);border-radius:2px;margin-top:6px;overflow:hidden}
+.sc-bar-fill{height:100%;background:var(--c);transition:width .4s}
+.sc-sub{font-size:9px;color:var(--t-c);margin-top:3px;opacity:0.8}
+
+.card{background:#fff;border:1px solid var(--bd);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.card-title{font-size:11px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;text-align:center;margin-bottom:8px}
+.hbar-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.hbar-label{width:140px;text-align:right;font-size:11px;color:var(--t2);flex-shrink:0;font-weight:500}
+.hbar-track{flex:1;background:#ECEBE9;border-radius:3px;height:16px;position:relative;overflow:hidden}
+.hbar-fill{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;color:#fff;font-size:10px;font-weight:700;min-width:0}
+.hbar-num{width:30px;text-align:right;font-size:11px;font-weight:600}
+
+.stacked-row{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.stacked-row-header{display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px}
+.stacked-row-label{font-weight:600}
+.stacked-row-total{color:var(--t2)}
+.stacked-bar{display:flex;height:20px;border-radius:4px;overflow:hidden;background:#ECEBE9}
+.stacked-seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:600;min-width:0;cursor:default}
+.stacked-seg[title]:hover{filter:brightness(1.1)}
+.legend{display:flex;gap:8px;font-size:10px;color:var(--t2);margin-top:6px;flex-wrap:wrap;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:3px}
+.legend-dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px}
+thead{background:var(--cb)}
+th{padding:6px 8px;text-align:left;font-weight:600;color:var(--t2);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;border-bottom:1px solid var(--bd)}
+td{padding:6px 8px;border-bottom:1px solid var(--bd)}
+tr:hover{background:var(--cb)}
+.type-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px}
+.badge-pamt{background:var(--pm-bg);color:var(--pm-m)}
+.badge-psdd{background:var(--ps-bg);color:var(--ps-t)}
+.badge-judicial{background:var(--jr-bg);color:var(--jr-t)}
+.deadline-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;display:inline-block}
+.dl-vencido{background:var(--dn);color:#fff}
+.dl-proximo{background:var(--wn);color:#fff}
+.dl-ok{background:var(--pm-bg);color:var(--pm-m)}
+.dl-neutro{background:var(--gr-bg);color:var(--gr-t)}
+
+.month-bars{display:flex;align-items:flex-end;gap:10px;height:140px;margin:8px 0}
+.month-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.month-bar-val{font-size:11px;font-weight:700;color:var(--t1)}
+.month-bar-fill{width:100%;background:var(--pm);border-radius:4px 4px 0 0;transition:opacity .2s;position:relative;display:flex;align-items:flex-end;justify-content:center}
+.month-bar-fill:hover{opacity:0.85}
+.month-bar-current{background:var(--jr)}
+.month-bar-label{font-size:10px;color:var(--t2);font-weight:500}
+
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:6px 8px;background:var(--cb);border-radius:6px}
+.filter-chip{font-size:10px;padding:3px 8px;border-radius:12px;background:#fff;border:1px solid var(--bd);cursor:pointer;color:var(--t2);font-weight:500}
+.filter-chip.active{background:var(--pm);color:#fff;border-color:var(--pm)}
+.filter-chip:hover{border-color:var(--pm)}
+
+.empty-state{text-align:center;padding:20px;color:var(--t3);font-size:12px}
+.color-blue{--c:var(--pm);--bg-c:var(--pm-bg);--t-c:var(--pm-t)}
+.color-coral{--c:var(--ps);--bg-c:var(--ps-bg);--t-c:var(--ps-t)}
+.color-purple{--c:var(--jr);--bg-c:var(--jr-bg);--t-c:var(--jr-t)}
+.color-teal{--c:var(--ct);--bg-c:var(--ct-bg);--t-c:var(--ct-t)}
+.color-pink{--c:var(--pk);--bg-c:var(--pk-bg);--t-c:var(--pk-t)}
+.color-amber{--c:var(--wn);--bg-c:var(--wn-bg);--t-c:var(--wn-t)}
+.color-red{--c:var(--dn);--bg-c:var(--dn-bg);--t-c:var(--dn-t)}
+.color-green{--c:var(--ok);--bg-c:var(--ok-bg);--t-c:var(--ok-t)}
+.color-gray{--c:var(--gr);--bg-c:var(--gr-bg);--t-c:var(--gr-t)}
+
+.summary-note{font-size:11px;color:var(--t2);background:var(--cb);padding:8px 12px;border-radius:6px;border-left:3px solid var(--pm);margin-bottom:10px}
+.summary-note strong{color:var(--t1);font-weight:600}
+
+@media(max-width:600px){
+.hbar-label{width:80px;font-size:9px}
+.month-bars{height:100px}
+.metrics-grid{grid-template-columns:repeat(2,1fr)}
+.species-grid{grid-template-columns:repeat(2,1fr)}
+th,td{padding:4px 5px;font-size:10px}
+}
+</style>
+<meta name="description" content="Dashboard jurídico da H.A. Advocacia Especializada em Trânsito — Central do Cliente Dez/2025 a Mai/2026">
+<meta name="author" content="H.A. Advocacia Especializada em Trânsito">
+<meta property="og:title" content="Dashboard jurídico — H.A. Advocacia">
+<meta property="og:description" content="Controle visual de ações administrativas e judiciais">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dashboard.henriqueaugusto.adv.br/">
+<link rel="canonical" href="https://dashboard.henriqueaugusto.adv.br/">
+</head>
+<body>
+<div id="app"></div>
+<script>
+const DATA = [{"m":"Janeiro","n":"IGOR SILVEIRA GADELHA"},{"m":"Janeiro","n":"PABLO MATHEUS DA SILVA SANTOS","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"CNH VENCIDA","pr":"2026-02-21","dp":"Prazo maximo: 2026-02-23 - prazo critico: 2026-02-21","pjs":"Ativo"},{"m":"Janeiro","n":"PABLO MATHEUS DA SILVA SANTOS","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"MANOBRA PERIGOSA","pr":"2026-02-24","dp":"Prazo maximo: 2026-02-26 - prazo critico: 2026-02-24","pjs":"Ativo"},{"m":"Janeiro","n":"ATAANDA OHARA LINHARES DE MEDEIROS","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"ULTRAPASSAR PELA CONTRAMAO ","pr":"2026-02-16","dp":"Prazo maximo: 2026-02-18 - prazo critico: 2026-02-16","pjs":"Ativo"},{"m":"Janeiro","n":"FRANK SANTOS DO NASCIMENTO","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"AMC - Fortaleza","inf":"LICENCIAMENTO ARASADO","pr":"2026-02-10","dp":"Prazo maximo: 2026-02-12 - prazo critico: 2026-02-10","pjs":"Ativo"},{"m":"Janeiro","n":"GABRIEL ALVES FREITAS","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Desobedecer Ordens do Agente de Trânsito","pr":"2026-02-24","dp":"Prazo maximo: 2026-02-26 - prazo critico: 2026-02-24","pjs":"Ativo"},{"m":"Janeiro","n":"FRANKLIN JULIO GURGEL CARNEIRO","tp":"P.A.M.T. (Multa)","st":"📄 03 - Recurso JARI","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-04-03","dp":"Recurso à JARI","pjs":"Ativo"},{"m":"Janeiro","n":"AMARILIO LINO JUNIOR","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-03-10","dp":"Prazo maximo: 2026-03-12 - prazo critico: 2026-03-10","pjs":"Ativo"},{"m":"Janeiro","n":"RAIMUNDO WILLIAN CAVALCANTE DE SOUSA","tp":"P.A.M.T. (Multa)","st":"📄 03 - Recurso JARI","og":"PRF - CE","inf":"Condutor Sem Capacete","pr":"2026-03-25","dp":"Recurso à JARI","pjs":"Ativo"},{"m":"Janeiro","n":"LUAN CARVALHO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"ARRANCADA BRUSCA","pr":"2026-03-14","dp":"Prazo maximo: 2026-03-16 - prazo critico: 2026-03-14","pjs":"Ativo"},{"m":"Janeiro","n":"EUGENIO CARVALHO FUJITA FRANCA PEQUENO - 8597149882","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-03-05","dp":"Prazo maximo: 2026-03-05 - prazo critico: 2026-03-05","pjs":"Ativo"},{"m":"Janeiro","n":"PEDRO HENRIQUE MOREIRA MARTINS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Condutor Sem Capacete","pr":"2026-03-10","dp":"Prazo maximo: 2026-03-12 - prazo critico: 2026-03-10","pjs":"Ativo"},{"m":"Janeiro","n":"ALDENISIO DE SOUSA FERNANDES - 85 9675-1856","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-02-03","dp":"Prazo maximo: 2026-02-05 - prazo critico: 2026-02-03","pjs":"Ativo"},{"m":"Janeiro","n":"GABRIEL ALMEIDA ","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"VELOCIDADE - SUPERIOR 50%","pr":"2026-03-20","dp":"Confeccionar e Protocolar Petição Inicial (Ação Judicial — Transferência de Responsabilidade)","pjs":"Ativo"},{"m":"Janeiro","n":"IOMAR LIMA DIAS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-03-10","dp":"Prazo maximo: 2026-03-12 - prazo critico: 2026-03-10","pjs":"Ativo"},{"m":"Janeiro","n":"PABLO MATHEUS DA SILVA SANTOS ","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"MANOBRA PERIGOSA","pr":"2026-02-21","dp":"Prazo maximo: 2026-02-23 - prazo critico: 2026-02-21","pjs":"Ativo"},{"m":"Janeiro","n":"ELITON VIEIRA DE LIMA","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2025-12-24","dp":"Prazo maximo: 2025-12-26 - prazo critico: 2025-12-24","pjs":"Ativo"},{"m":"Janeiro","n":"JULY ARLESON BEZERRA DA SILVA - (85) 87563379","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-02-17","dp":"Prazo maximo: 2026-02-19 - prazo critico: 2026-02-17","pjs":"Ativo"},{"m":"Janeiro","n":"FRANCISCO LUCAS MAIA MOTA  - 8599675787","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-02-03","dp":"Prazo maximo: 2026-02-05 - prazo critico: 2026-02-03","pjs":"Ativo"},{"m":"Janeiro","n":"EDUARDO DE OLIVEIRA MOREIRA - (85) 97645530","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-03-05","dp":"Prazo maximo: 2026-03-05 - prazo critico: 2026-03-05","pjs":"Ativo"},{"m":"Janeiro","n":"MATHEUS CALEBE NUNES SOARES - 558585427525","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-02-28","dp":"Prazo maximo: 2026-03-02 - prazo critico: 2026-02-28","pjs":"Ativo"},{"m":"Janeiro","n":"WELLINGTON D'AMATO - 11954368012 ","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"DETRAN-SP","pjs":"Ativo"},{"m":"Janeiro","n":" IGOR SILVEIRA GADELHA - 8588898989 ","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","pr":"2026-03-31","dp":"Ação Anulatória - Suspensão do Direito de Dirigir (PSDD)","pjs":"Ativo"},{"m":"Janeiro","n":"FRANCISCO ANTÔNIO DE SOUZA - 558584576072","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-01-03","dp":"Prazo maximo: 2026-01-05 - prazo critico: 2026-01-03","pjs":"Ativo"},{"m":"Janeiro","n":"GABRIEL ALVES FREITAS ","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"ARRANCADA BRUSCA","pr":"2026-02-24","dp":"Prazo maximo: 2026-02-26 - prazo critico: 2026-02-24","pjs":"Ativo"},{"m":"Janeiro","n":"JOSÉ VALMIR CARNEIRO VASCONCELOS NETO - 85 8720-6877","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-02-24","dp":"Prazo maximo: 2026-02-26 - prazo critico: 2026-02-24","pjs":"Ativo"},{"m":"Janeiro","n":"JOAO FELIPE MORAIS DO NASCIMENTO","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-01-27","dp":"Prazo maximo: 2026-01-29 - prazo critico: 2026-01-27","pjs":"Ativo"},{"m":"Janeiro","n":"IVONALDO DOS SANTOS ALEXANDRE","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-02-10","dp":"Prazo maximo: 2026-02-12 - prazo critico: 2026-02-10","pjs":"Ativo"},{"m":"Janeiro","n":"ATAANDA OHARA LINHARES DE MEDEIROS","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Forçar passagem entre veículos em sentidos opostos","pr":"2026-02-16","dp":"Prazo maximo: 2026-02-18 - prazo critico: 2026-02-16","pjs":"Ativo"},{"m":"Janeiro","n":"AFONSO PEREIRA DE SOUSA NETO","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-01-06","dp":"Prazo maximo: 2026-01-08 - prazo critico: 2026-01-06","pjs":"Ativo"},{"m":"Janeiro","n":"ERINALDO BARBOSA FILHO","tp":"P.A.M.T. (Multa)","st":"❌ 08 - Arquivado/Encerrado","og":"PRF - RN","inf":"Forçar passagem entre veículos em sentidos opostos","pr":"2026-01-07","dp":"Prazo maximo: 2026-01-09 - prazo critico: 2026-01-07","pjs":"Ativo"},{"m":"Janeiro","n":"FRANK SANTOS DO NASCIMENTO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Retroativa de Veículo","pjn":"3004788-53.2026.8.06.0001","pjs":"Ativo"},{"m":"Janeiro","n":"MARCOS ROBERTO DOS SANTOS","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - PI","inf":"MANOBRA PERIGOSA","pjs":"Ativo"},{"m":"Janeiro","n":"JEFFERSON SANTOS DE SOUZA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"DNIT","inf":"VELOCIDADE - SUPERIOR 50%","pjn":"5005032-68.2026.8.24.0090","pjs":"Ativo"},{"m":"Janeiro","n":"FERNANDO PATRICIO PESSOA ","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-02-17","dp":"Prazo maximo: 2026-02-19 - prazo critico: 2026-02-17","pjs":"Ativo"},{"m":"Janeiro","n":"FRANCISCO NISLEY CRUZ FERREIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Retroativa de Veículo","pjn":"3004838-79.2026.8.06.0001","pjs":"Ativo"},{"m":"Janeiro","n":"LUIZ ROBERTO OLIVEIRA DE SOUZA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Retroativa de Veículo","pr":"2026-03-31","dp":"Prazo até 31/03/2026 - Protocolo da Ação Judicial","pjs":"Ativo"},{"m":"Janeiro","n":"BOULLENEY RIOS TAVARES ","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-02-03","dp":"Prazo maximo: 2026-02-05 - cadastrado 2 dias antes (2026-02-03)","pjs":"Ativo"},{"m":"Janeiro","n":"MATHEUS VIEIRA PONTE ","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - CE","inf":"Dirigir Sob Influencia do Alcool","pr":"2026-02-17","dp":"Prazo maximo: 2026-02-19 - cadastrado 2 dias antes (2026-02-17)","pjs":"Ativo"},{"m":"Fevereiro","n":"SILVANA DE SOUSA CAVALCANTE","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Condutor Sem Capacete"},{"m":"Fevereiro","n":"PABLO MATHEUS DA SILVA SANTOS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"MANOBRA PERIGOSA"},{"m":"Fevereiro","n":"MOISES ANTONIO DOS PRAZERES BORGES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DETRAN - PE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"LEONARDO OLIVEIRA DE LIMA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"LEONARDO GABRIEL OLIVEIRA ANDRADE","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"EMANUELLE VASCONCELOS DE SOUZA BRAGA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"EDUARDO BRITO DOS SANTOS JUNIOR","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"CARLOS ALBERTO TEOFILO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"MANOBRA PERIGOSA"},{"m":"Fevereiro","n":"CARLOS ALBERTO TEOFILO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"MANOBRA PERIGOSA"},{"m":"Fevereiro","n":"ADILSON JOSE DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"CLAUDIO RAMOS DOS SANTOS","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo"},{"m":"Fevereiro","n":"EDUARDO BRITO DOS SANTOS JUNIOR","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"CARLOS ALBERTO TEOFILO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"MANOBRA PERIGOSA"},{"m":"Fevereiro","n":"JOAO ALVES DA SILVA NETO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Condutor Sem Capacete"},{"m":"Fevereiro","n":"HERICKLEPTON LUIZ DE OLIVEIRA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"VELOCIDADE - SUPERIOR 50%"},{"m":"Fevereiro","n":"PAULO SERGIO MEDEIROS DE ARAUJO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Condutor Sem Capacete"},{"m":"Fevereiro","n":"ANTONIO JEFFERSON PEREIRA DE OLIVEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"ISAQUE DE OLIVEIRA SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"HUMBERTO DE AGUIAR","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"REBECA VIEIRA SANTOS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"JOSE ARTUR DOS SANTOS BARROS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"CIDCLEI SILVA  DE ARAUJO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"ADRIANO DUARTE MOURA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"ALEXANDRE BIAZZI","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DER - SP","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"FABRICIO FREITAS PIRES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"FABRICIO FREITAS PIRES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","dp":"AIT pendente — N.A. não recebida ainda"},{"m":"Fevereiro","n":"DIEGO MUNIZ SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2025-03-30","dp":"Prazo Defesa Prévia PAMT — 31/03/2026"},{"m":"Fevereiro","n":"DIEGO MUNIZ SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2025-03-30","dp":"Prazo Defesa Prévia PAMT — 31/03/2026"},{"m":"Fevereiro","n":"LEONARDO GABRIEL OLIVEIRA ANDRADE","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"LEONARDO GABRIEL OLIVEIRA ANDRADE","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-03-12"},{"m":"Fevereiro","n":"FRANCISCA HELENA DE OLIVEIRA PINHO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"FRANCISCA HELENA DE OLIVEIRA PINHO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"ESTACIONAR EM DESACORDO COM A REGULAMENTEAÇÃO","pr":"2026-04-10"},{"m":"Fevereiro","n":"SILVANA DE SOUSA CAVALCANTE","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Condutor Sem Capacete","pr":"2026-04-10"},{"m":"Fevereiro","n":"SILVANA DE SOUSA CAVALCANTE","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Condutor Sem Capacete","pr":"2026-04-10"},{"m":"Fevereiro","n":"LUCAS HENRIQUE AQUINO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro"},{"m":"Fevereiro","n":"LUCAS HENRIQUE AQUINO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-04-16"},{"m":"Fevereiro","n":"Cláudio Ramos dos Santos","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"PREF. DE CE","inf":"7455"},{"m":"Fevereiro","n":"Cláudio Ramos dos Santos","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"PREF. DE CE","inf":"7455"},{"m":"Fevereiro","n":"Cláudio Ramos dos Santos","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"PREF. DE CE","inf":"7455"},{"m":"Fevereiro","n":"Cláudio Ramos dos Santos","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"7455"},{"m":"Fevereiro","n":"Cláudio Ramos dos Santos","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"7455"},{"m":"Fevereiro","n":"Cláudio Ramos dos Santos","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"7455"},{"m":"Fevereiro","n":"LEONARDO OLIVEIRA DE LIMA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-03-30","dp":"DEFESA PRÉVIA"},{"m":"Fevereiro","n":"ADRIANO DUARTE MOURA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"ESTACIONAR EM DESACORDO COM A REGULAMENTEAÇÃO","dp":"PRODUZIR - PROCURAÇÃO + DECLARACÇÃO DE RESPONSABILIDADE PARA O CONDUTOR INFRATOR - QUE SERÁ O SAVIO LOURENÇO"},{"m":"Fevereiro","n":"CIDCLEI SILVA  DE ARAUJO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-05-04","dp":"DEFESA PRÉVIA"},{"m":"Fevereiro","n":"HUMBERTO DE AGUIAR","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-02-04","dp":"DEFESA PRÉVIA"},{"m":"Fevereiro","n":"JOSE ARTUR DOS SANTOS BARROS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-06-04","dp":"DEFESA PRÉVIA"},{"m":"Fevereiro","n":"EMANUELLE VASCONCELOS DE SOUZA BRAGA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-02-26","dp":"DEFESA PRÉVIA","pjs":"Ativo"},{"m":"Fevereiro","n":"ADILSON JOSE DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DETRAN - PE","inf":"Recusa ao Bafômetro","pr":"2026-02-16","dp":"DEFESA PRÉVIA","pjs":"Ativo"},{"m":"Fevereiro","n":"ALEXANDRE BIAZZI","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DER - SP","inf":"Recusa ao Bafômetro","pr":"2026-03-04","dp":"DEFESA PRÉVIA","d1":"Sim ","d2":"Sim ","d3":"Sim ","d4":"Sim ","d5":"Sim ","d6":"Sim ","d7":"Aguardando","pjs":"Ativo"},{"m":"Fevereiro","n":"LEONARDO OLIVEIRA DE LIMA ","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-03-30","dp":"DEFESA PRÉVIA","pjs":"Ativo"},{"m":"Fevereiro","n":"REBECA VIEIRA SANTOS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"ESTACIONAR NAS VAGAS RESERVADOS PARA IDOSOS","pr":"2025-11-03","dp":"Prazo DP — 03/11/2025 (vencido) | AIT AS01658577 | AMC Fortaleza | PPD — vaga idoso","pjs":"Ativo"},{"m":"Fevereiro","n":"LUAN CARLOS DA SILVA PEREIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - RN","inf":"Recusa ao Bafômetro","dp":"P. Inicial Judicial | Art. 306 §2 CTB embriaguez | PM/RN | Processo 0800568-51.2026.8.20.5300","pjt":"Outro","pjs":"Ativo"},{"m":"Fevereiro","n":"CARLOS ALBERTO TEOFILO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"MANOBRA PERIGOSA","pr":"2026-02-26","dp":"DEFESA-PRÉVIA","pjs":"Ativo"},{"m":"Fevereiro","n":"LUAN CARLOS DA SILVA PEREIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - RN","inf":"Recusa ao Bafômetro","dp":"P. Inicial Judicial | Art. 306 §2 CTB embriaguez | PM/RN | Inquérito em tramite | Data: 24/01/2026","pjn":"0800568-51.2026.8.20.5300,","pjc":"1ª Vara da Comarca de Macaíba/RN ","pjs":"Ativo"},{"m":"Fevereiro","n":"PABLO MATHEUS DA SILVA SANTOS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DEMUTRAN - ARACATI - CE","inf":"MANOBRA PERIGOSA","pr":"2026-03-26","dp":"DEFESA PRÉVIA","pjs":"Ativo"},{"m":"Fevereiro","n":"ISAQUE DE OLIVEIRA SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DEMUTRAN - PAU DOS FERROS - RN","inf":"ESTACIONAR NAS VAGAS RESERVADOS PARA IDOSOS","pr":"2026-02-20","dp":"Prazo JARI — 20/02/2026 (vencido) | AIT AE00015524 | DEMUTRAN Pau dos Ferros/RN | PPD — vaga idoso","pjs":"Ativo"},{"m":"Fevereiro","n":"PAULO SERGIO MEDEIROS DE ARAUJO ","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Condutor Sem Capacete","pr":"2026-03-20","dp":"DEFESA PRÉVIA","pjs":"Ativo"},{"m":"Fevereiro","n":"ANTONIO JEFFERSON PEREIRA DE OLIVEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-03-26","dp":"Prazo DP — 26/03/2026 | AIT AS01745728 | AMC Fortaleza | Art. 165-A CTB (Recusa Bafômetro)","pjs":"Ativo"},{"m":"Fevereiro","n":"CLAUDIO RAMOS DOS SANTOS ","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"VELOCIDADE - SUPERIOR 50%","pr":"2026-02-23","dp":"Prazo DP — 23/02/2026 (vencido) | 6 AITs | AMC Fortaleza + Pref. Caucaia + DETRAN-CE | Período: 12/10/2025–31/12/2025","pjs":"Ativo"},{"m":"Fevereiro","n":"HERICKLEPTON LUIZ DE OLIVEIRA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DNIT","inf":"VELOCIDADE - SUPERIOR 50%","pr":"2026-02-24","dp":"DEFESA PRÉVIA ","d1":"Sim ","d2":"Sim ","d3":"Sim ","d4":"Sim ","d5":"Sim ","d6":"Sim ","d7":"Aguardando","pjs":"Ativo"},{"m":"Fevereiro","n":"JOAO ALVES DA SILVA NETO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DEMUTRAN - REDENÇÃO - CE","inf":"Condutor Sem Capacete","pr":"2026-03-20","dp":"DEFESA PRÉVIA","pjs":"Ativo"},{"m":"Fevereiro","n":"MOISES ANTONIO DOS PRAZERES BORGES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"PRF - BA","inf":"Recusa ao Bafômetro","dp":"Prazo em aberto | PRF/BA + PRF/PE | Data infração: 30/01/2026 | Verificar AIT com a PRF","pjs":"Ativo"},{"m":"Fevereiro","n":"MOISES ANTONIO DOS PRAZERES BORGES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"PRF - BA","inf":"Recusa ao Bafômetro","dp":"Prazo em aberto | PRF/BA + PRF/PE | Data infração: 30/01/2026 | Verificar AIT com a PRF","pjs":"Ativo"},{"m":"Marco","n":"FRANCISCO MARCOS GOMES"},{"m":"Marco","n":"JOSE WINICIUS LIMA OLIVEIRA","tp":"PSDD (Suspensão)","st":"📝 01 - Defesa Prévia - PASDD","og":"Detran - CE","pjs":"Ativo"},{"m":"Marco","n":"LUCAS OLIVEIRA MARTINS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DETRAN-SP","pjs":"Ativo"},{"m":"Marco","n":"LUCAS OLIVEIRA MARTINS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DETRAN-SP","pjs":"Ativo"},{"m":"Marco","n":"LUCAS OLIVEIRA MARTINS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DETRAN-SP","pjs":"Ativo"},{"m":"Marco","n":"LUCAS OLIVEIRA MARTINS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DETRAN-SP","pjs":"Ativo"},{"m":"Marco","n":"LUCAS OLIVEIRA MARTINS","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"DETRAN-SP","pjs":"Ativo"},{"m":"Marco","n":"LUCAS OLIVEIRA MARTINS","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"DETRAN-SP","pjs":"Ativo"},{"m":"Marco","n":"GABRIEL HENRIQUE CARDOSO SILVA","tp":"PSDD (Suspensão)","st":"📝 01 - Defesa Prévia - PASDD","og":"Detran - CE","pr":"2026-04-30","dp":"DP PASDD - Proc. 3372/2025 - DETRAN-SP - Prazo: 30/04/2026","pjs":"Ativo"},{"m":"Marco","n":"MATHEUS ROCHA MARTINS LIMA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","pr":"2026-04-28","dp":"DP - Art. 165-A (recusa bafometro) - DETRAN/CE - Prazo: 28/04/2026 - AIT pendente de notificacao","pjs":"Ativo"},{"m":"Marco","n":"IVONALDO SIMAO DA SILVA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","pjs":"Ativo"},{"m":"Marco","n":"LYNNEKER LENNON DE SOUSA COSTA","tp":"P.A.M.T. (Multa)","og":"Detran - CE","pjs":"Ativo"},{"m":"Marco","n":"LYNNEKER LENNON DE SOUSA COSTA","tp":"P.A.M.T. (Multa)","og":"Detran - CE","pjs":"Ativo"},{"m":"Marco","n":"LYNNEKER LENNON DE SOUSA COSTA","tp":"P.A.M.T. (Multa)","og":"Detran - CE","pjs":"Ativo"},{"m":"Marco","n":"LYNNEKER LENNON DE SOUSA COSTA","tp":"P.A.M.T. (Multa)","og":"Detran - CE","pjs":"Ativo"},{"m":"Marco","n":"LYNNEKER LENNON DE SOUSA COSTA","tp":"P.A.M.T. (Multa)","og":"Detran - CE","pjs":"Ativo"},{"m":"Marco","n":"LYNNEKER LENNON DE SOUSA COSTA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","pr":"2026-05-06","dp":"Transf. Responsabilidade - 5 AITs - DETRAN/CE - Prazo: 06/05/2026","pjs":"Ativo"},{"m":"Marco","n":"MARCELINO ANANIAS DE PAULA","tp":"P.A.M.T. (Multa)","st":"📄 03 - Recurso JARI","og":"AMC - Fortaleza","pr":"2026-04-22","dp":"JARI - AIT S010016298 - AMTTR Sao Goncalo do Amarante - Prazo: 22/04/2026","pjs":"Ativo"},{"m":"Marco","n":"ALAN QUESTER TORRES LEMES","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - PI","pr":"2026-03-16","dp":"DP — AIT ER00461660 — DETRAN-PI — Prazo vencido: 16/03/2026","pjs":"Ativo"},{"m":"Marco","n":"ALAN QUESTER TORRES LEMES","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"Detran - PI","pr":"2026-03-16","dp":"DP — AIT ER00460416 — DETRAN-PI — Prazo vencido: 16/03/2026","pjs":"Ativo"},{"m":"Marco","n":"PETRONIUS GOMES DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-05-07","dp":"DP — AIT SC01175638 — DETRAN-CE — Prazo: 07/05/2026","pjs":"Ativo"},{"m":"Marco","n":"MOISÉS CÉSAR DOS SANTOS","tp":"PSDD (Suspensão)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","dp":"⚠️ Prazo DP não consta no contrato — verificar junto ao DETRAN-CE"},{"m":"Marco","n":"THIAGO ALBUQUERQUE DE MELO ROCHA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-03-31","dp":"⚠️ Defesa Prévia PAMT — 31/03/2026 (URGENTE — 7 dias)"},{"m":"Marco","n":"JOSE ADAILDO PEREIRA","tp":"PSDD (Suspensão)","st":"📝 01 - Defesa Prévia - PASDD","og":"Detran - CE","inf":"Recusa ao Bafômetro","dp":"PSDD — AIT SC01081123 — DETRAN-CE — Prazo vencido","pjs":"Ativo"},{"m":"Marco","n":"JOSE ADAILDO PEREIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-03-27","dp":"DP — AIT SC01171493 — DETRAN-CE — Prazo: 27/03/2026","pjs":"Ativo"},{"m":"Marco","n":"ALAN QUESTER TORRES LEMES","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - PI","pjs":"Ativo"},{"m":"Marco","n":"GABRIEL LINHARES BARBOSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","pr":"2026-04-10","dp":"Prazo DP — 10/04/2026 | AIT SC01169243 | DETRAN-CE | Transitar em passarela","pjs":"Ativo"},{"m":"Marco","n":"FRANCISCO MARCIO FERREIRA LINO","tp":"P.A.M.T. (Multa)","st":"📄 03 - Recurso JARI","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo"},{"m":"Marco","n":"JOSE NAIRTON FERNANDES FREITAS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"DETRAN-PB","inf":"Recusa ao Bafômetro","pr":"2026-04-09","dp":"DP — AIT DT08961047 — DETRAN-PB — Prazo: 09/04/2026","pjs":"Ativo"},{"m":"Marco","n":"ANA KARINE DA SILVA SOUSA PINTO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-04-20","dp":"DP — AIT AS01772142 — AMC Fortaleza — Prazo: 20/04/2026","pjs":"Ativo"},{"m":"Marco","n":"JOABE CAMPELO DE SOUZA","tp":"P.A.M.T. (Multa)","st":"📄 03 - Recurso JARI","og":"AMC - Fortaleza","inf":"ESTACIONAR EM DESACORDO COM A REGULAMENTEAÇÃO","pr":"2026-04-02","pjs":"Ativo"},{"m":"Marco","n":"JOABE CAMPELO DE SOUZA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"AMC - Fortaleza","inf":"ESTACIONAR EM DESACORDO COM A REGULAMENTEAÇÃO","pr":"2026-04-02","dp":"Indicação Condutor / Transferência de Infração — AIT VM00313409 — AMC Fortaleza — Prazo: 02/04/2026","pjs":"Ativo"},{"m":"Marco","n":"WASHINGTON JOÃO MENEZES SERRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-05-07","dp":"Defesa Prévia — AIT PS00212179 — AMC Fortaleza — Art. 165-A CTB — Prazo: 07/05/2026","d1":"Sim ","pjs":"Ativo"},{"m":"Marco","n":"INÁCIO EDUARDO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-04-09","dp":"Prazo DP — 09/04/2026 | AIT AS01769337 | AMC Fortaleza | Art. 165-A CTB (Recusa Bafômetro)","pjs":"Ativo"},{"m":"Marco","n":"RAIMUNDO AMAURI DE ARAUJO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Retroativa de Veículo","pjs":"Ativo"},{"m":"Marco","n":"DANIEL BARROSO FEITOSA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Judicial de Pontos","pr":"2025-03-20","pjs":"Ativo"},{"m":"Marco","n":"FRANCISCO DOS SANTOS COELHO FILHO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Retroativa de Veículo","pjs":"Ativo"},{"m":"Marco","n":"ADALBERTO SARAIVA LEAO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Judicial de Pontos","pjs":"Ativo"},{"m":"Marco","n":"CRISTIANO DOS SANTOS SOUSA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","pr":"2026-04-02","dp":"Ação Judicial — Renúncia de Propriedade veículo HXY7714 | Processo não protocolado | Prazo referência: 02/04/2026","pjs":"Ativo"},{"m":"Marco","n":"DARLAN GONCALVES DE SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Forçar passagem entre veículos em sentidos opostos","pr":"2026-04-23","dp":"Prazo DP — 23/04/2026 | AIT PS00202881 | AMC Fortaleza | Art. 193 CTB (Forçar passagem)","pjs":"Ativo"},{"m":"Marco","n":"DARLAN GONCALVES DE SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"MANOBRA PERIGOSA","pr":"2026-04-23","dp":"Prazo DP — 23/04/2026 | AIT PS00202880 | AMC Fortaleza | Art. 174 CTB (Manobra Perigosa)","pjs":"Ativo"},{"m":"Marco","n":"CRISTIANO DOS SANTOS SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Condutor Sem Capacete","pr":"2026-04-02","dp":"Prazo PSDD suspensão — 02/04/2026 | SC01064019/SC01064020 | DETRAN-CE | Art. 244 II CTB (Sem Capacete)","pjs":"Ativo"},{"m":"Marco","n":"DARLAN GONCALVES DE SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-04-23","dp":"Prazo DP — 23/04/2026 | AIT PS00202879 | AMC Fortaleza | Art. 277 CTB (Recusa Bafômetro)","pjs":"Ativo"},{"m":"Marco","n":"JOAO VICTOR LOURENCO NOBRE","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-04-22","dp":"Prazo máximo Defesa Prévia (DP) — 22/04/2026 | AIT SC01175794 | DETRAN-CE | Art. 165-A CTB (Recusa Bafômetro)","pjs":"Ativo"},{"m":"Marco","n":"ALINE SPASIANI FERREIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"DETRAN-SP","inf":"Transferência Retroativa de Veículo","dp":"Caso judicial — clonagem de placa — desatrelamento AITs S004528466 e 7VA1651589","pjs":"Ativo"},{"m":"Marco","n":"RENATO SOUSA DA COSTA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-04-20","dp":"Prazo máximo: 2026-04-23 — cadastrado 2 dias antes (2026-04-21)","pjs":"Ativo"},{"m":"Marco","n":"ANTONIO CARLOS DE SOUSA SOBRINHO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pr":"2026-04-22","dp":"Prazo máximo: 2026-04-23 — cadastrado 2 dias antes (2026-04-21)"},{"m":"Marco","n":"WILSON SOARES PINTO","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"AMC - Fortaleza","inf":"Indicação de Condutor - ADM","pr":"2026-03-06","dp":"Protocolo da indicação de condutor administrativa na AMC - já realizado","pjs":"Ativo"},{"m":"Marco","n":"WILSON SOARES PINTO","tp":"P.A.M.T. (Multa)","st":"⏳ 02 - Aguardando Julgamento DP","og":"AMC - Fortaleza","inf":"Indicação de Condutor - ADM","pr":"2026-03-06","dp":"Protocolo da indicação de condutor administrativa na AMC - já realizado"},{"m":"Marco","n":"ADRIANO REIS SEVERINO DE ARAUJO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2025-04-12","dp":"Prazo Defesa Prévia PAMT — 13/04/2026"},{"m":"Marco","n":"DANYLLO LUCAS DE LIMA RODRIGUES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2025-04-05","dp":"Prazo Defesa Prévia PAMT — 06/04/2026","pjs":"Ativo"},{"m":"Marco","n":"FELIPE DE FREITAS SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"PRF - CE","inf":"Recusa ao Bafômetro","pr":"2025-04-21","dp":"Prazo Defesa Prévia PAMT — 22/04/2026","pjs":"Ativo"},{"m":"Marco","n":"DANIEL PESSOA PEREIRA","tp":"PSDD (Suspensão)","st":"📝 01 - Defesa Prévia - PASDD","og":"Detran - CE","inf":"Recusa ao Bafômetro","pr":"2026-03-29","dp":"Defesa Prévia PSDD — prazo a confirmar","pjs":"Ativo"},{"n":"EDUARDO VICTOR DA SILVA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"AMC - Fortaleza","inf":"Acumulo de Pontos","pjt":"Acao Anulatoria Multa","pjs":"Ativo","m":"Dezembro","pjn":"3115746-43.2025.8.06.0001"},{"n":"RANIERE ALVES DA COSTA JUNIOR","tp":"Judicial ","st":"Sentença Procedente","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Dezembro","pjn":"3092962-72.2025.8.06.0001"},{"n":"JEFERSON ALVES DE OLIVEIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"PSDD","pjt":"Acao Anulatoria PSDD","pjs":"Ativo","m":"Dezembro"},{"n":"MOISES ALMEIDA CASTELO BRANCO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"CRIME DE TRANSITO - ANPP","pjt":"Acao Anulatoria PSDD","pjs":"Ativo","m":"Dezembro"},{"n":"GABRIEL DA SILVA OLIVEIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência de Infrações","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Dezembro"},{"n":"JOSÉ LIBORIO MOISES","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"PSDD","pjt":"Acao Anulatoria PSDD","pjs":"Ativo","m":"Dezembro"},{"n":"ELEOMAR MENDES DE OLIVEIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"PSDD","pjt":"Acao Anulatoria PSDD","pjs":"Ativo","m":"Dezembro"},{"n":"MARIA VITORIA DA SILVA DOS SANTOS","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Dezembro"},{"n":"MICHAEL SOUZA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"LEONARDO OLIVEIRA DE LIMA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"REBECA VIEIRA","tp":"P.A.M.T. (Multa)","st":"❌ 08 - Arquivado/Encerrado","og":"AMC - Fortaleza","inf":"ESTACIONAR NAS VAGAS RESERVADOS PARA IDOSOS","pjs":"Contrato Rescindido","m":"Dezembro"},{"n":"HUMBERTO DE AGUIAR","tp":"P.A.M.T. (Multa)","st":"❌ 08 - Arquivado/Encerrado","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Contrato Rescindido","m":"Dezembro"},{"n":"ISAQUE DE OLIVEIRA SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro","pjn":"3013631-49.2026.8.06.6001"},{"n":"LUAN CARLOS DA SILVA PEREIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"CLAUDIO RAMOS DOS SANTOS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"VELOCIDADE - SUPERIOR 50%","pjs":"Ativo","m":"Dezembro","pjn":"3013787-37.2026.8.06.6001"},{"n":"PABLO MATHEUS DA SILVA SANTOS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"MANOBRA PERIGOSA","pjs":"Ativo","m":"Dezembro"},{"n":"CARLOS ALBERTO TEOFILO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"MANOBRA PERIGOSA","pjs":"Ativo","m":"Dezembro"},{"n":"JEFFERSON SANTOS DE SOUZA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"DNIT","inf":"VELOCIDADE - SUPERIOR 50%","pjt":"Acao Anulatoria Multa","pjs":"Ativo","m":"Dezembro"},{"n":"WELLINGTON D'AMATO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"DETRAN-SP","inf":"PSDD","pjt":"Acao Anulatoria PSDD","pjs":"Ativo","m":"Dezembro"},{"n":"FERNANDO PATRICIO PESSOA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"PSDD","pjt":"Acao Anulatoria PSDD","pjs":"Ativo","m":"Dezembro"},{"n":"ATAANDA OHARA LINHARES DE MEDEIROS","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Dezembro"},{"n":"FRANK SANTOS DO NASCIMENTO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Retroativa de Veículo","pjt":"Transferência Retroativa de Veículo","pjs":"Ativo","m":"Dezembro","pjn":"3004788-53.2026.8.06.0001"},{"n":"FRANCISCO NISLEY CRUZ FERREIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Retroativa de Veículo","pjt":"Transferência Retroativa de Veículo","pjs":"Ativo","m":"Dezembro","pjn":"3004838-79.2026.8.06.0001"},{"n":"LUIZ ROBERTO OLIVEIRA DE SOUZA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Dezembro","pjn":"3004832-72.2026.8.06.0001"},{"n":"LEANDRO CARVALHO BARBOSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"LEANDRO CARVALHO BARBOSA - INFRAÇÃO 02","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"FRANCISCO FABIO DE LIMA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"PAULO ROBERTO BRITO DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"RAFAEL DE SOUSA MARQUES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"JOSE ARTUR DOS SANTOS BARROS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"ANTONIO JEFFERSON PEREIRA DE OLIVEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"PAULO SERGIO MEDEIROS DE ARAUJO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Condutor Sem Capacete","pjs":"Ativo","m":"Dezembro"},{"n":"IOMAR LIMA DIAS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"AILTON MOURA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"EUGENIO CARVALHO FUJITA FRANCA PEQUENO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"ALDENISIO DE SOUSA FERNANDES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"FRANCISCO LUCAS MAIA MOTA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"JOAO FELIPE MORAIS DO NASCIMENTO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"BOULLENEY TAVARES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"ANDRE MASCARENHAS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"FRANCISCO JEAN MESQUITA GALDINO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"FRANCISCO IZYLL OLIVEIRA MACHADO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"BRUNO SOUSA SIMOES","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"ANA CAROLINE PENHA COSTA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"MATHUZALEM DE JESUS OLIVEIRA VALENTIM","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Dezembro"},{"n":"FERNANDO PIRES LOPES","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril"},{"n":"WESLEY SANTOS FEITOZA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril"},{"n":"ANA CAROLINE PAIVA DA SILVEIRA AMORA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril"},{"n":"JOSE WINICIUS LIMA OLIVEIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Acumulo de Pontos","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril"},{"n":"LUCAS OLIVEIRA MARTINS","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"DETRAN-SP","inf":"Acumulo de Pontos","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril"},{"n":"ANA PAULA JUACABA REIS VIANNA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"PCDD","pjt":"Reativar CNH","pjs":"Ativo","m":"Abril"},{"n":"JORGE LUIS DE ANDRADE DO NASCIMENTO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Acumulo de Pontos","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril"},{"n":"ANTONIO SAMUEL VIANA ROMAO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Acumulo de Pontos","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril"},{"n":"SAMUEL RYAN MENESES DA COSTA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"PLACA CLONADA","pjt":"Outro","pjs":"Ativo","m":"Abril"},{"n":"FRANCISCO EDUARDO PEREIRA DA COSTA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"PSDD","pjt":"Acao Anulatoria PSDD","pjs":"Ativo","m":"Abril"},{"n":"NILSON","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril"},{"n":"JOSE ARAUJO DE OLIVEIRA NETO","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril"},{"n":"DR. ANDRÉ THOMAS MEDEIROS OLIVEIRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Demais Infrações Suspensivas","pjt":"Outro","pjs":"Ativo","m":"Abril"},{"n":"FERNANDO PATRICIO PESSOA - NOVA MULTA ADM","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - CE","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"EDILSON REIS JR","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"CARLOS SERGIO CANDANGO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"CHARLES FERREIRA NOBRE","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"BRUNO OLIVEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"DANIEL BARROSO FEITOSA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Transferência Judicial de Pontos","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Abril","pjn":"3013425-35.2026.8.06.6001"},{"n":"BEATRIZ OLIVEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"NAIZA VIEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"CARLOS HENRIQUE MOREIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"PEDRO ALEXANDRE OLIVEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"DENILSON SOUSA LIMA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Condutor Sem Capacete","pjs":"Ativo","m":"Abril"},{"n":"JOAO MARCOS PEREIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Condutor Sem Capacete","pjs":"Ativo","m":"Abril"},{"n":"VICTOR HUGO OLIVEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"FRANCISCO ARTHUR","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Abril"},{"n":"JOAO GABRIEL FURTADO BASTOS","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Maio"},{"n":"JOSE JEFFERSON DE ANDRADE SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Maio"},{"n":"VANESSA RODRIGUES GOMES","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Cancelamento de PPD","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Maio"},{"n":"MILTON LUCAS DA SILVA MONTEIRO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Maio"},{"n":"DIEGO MOURAO TEIXEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Maio"},{"n":"JOSE ANGELINHO CORDEIRO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Maio"},{"n":"AYSLAN DE SANTANA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Maio"},{"n":"RAFAEL BEZERRA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"AMC - Fortaleza","inf":"Nulidade / Parcelamento de Multa","pjt":"Acao Anulatoria Multa","pjs":"Ativo","m":"Maio"},{"n":"JOSE JONATHAN SOUSA DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Condutor Sem Capacete","pjs":"Ativo","pr":"2026-05-22","m":"Maio"},{"n":"GUILHERME LOURENÇO BARBOSA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Acumulo de Pontos","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Maio"},{"n":"MATHEUS BASTOS CAVALCANTI","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"ARRANCADA BRUSCA","pjs":"Ativo","m":"Maio"},{"n":"TULIO COSTA DE OLIVEIRA SOUSA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Maio"},{"n":"EDUARDO HENRIQUE CARVALHO DE OLIVEIRA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Maio"},{"n":"PAULINO RODRIGUES NUNES DO NASCIMENTO","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"AMC - Fortaleza","inf":"Condutor Sem Capacete","pjs":"Ativo","m":"Maio"},{"n":"FABIO HENRIQUE ARAUJO COSTA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"Detran - RN","inf":"Recusa ao Bafômetro","pjs":"Ativo","m":"Maio"},{"n":"MATHEUS ARAUJO RODRIGUES DA SILVA","tp":"P.A.M.T. (Multa)","st":"📝 01 - Defesa Prévia - PAMT","og":"PREF. DE CE","inf":"Condutor Sem Capacete","pjs":"Ativo","pr":"2026-05-22","dp":"Prazo DP — 22/05/2026 | AIT V010269618 | AMT Itaitinga | Art. 244 I CTB (Sem Capacete)","m":"Maio"},{"n":"NAYARA PEREIRA DA SILVA","tp":"Judicial ","st":"01 - Confecção da P. Inicial","og":"Detran - CE","inf":"Acumulo de Pontos","pjt":"Transferencia Pontos + Reativacao PPD","pjs":"Ativo","m":"Maio"}];
+
+// ═════════════════════════════════════════════════════════
+// HELPERS
+// ═════════════════════════════════════════════════════════
+const lc = v => (v||"").toString().toLowerCase().trim();
+const has = (v, ...kw) => { const s = lc(v); return kw.some(k => s.includes(k)); };
+const isSim = v => has(v,"sim");
+const tasks = DATA.filter(t => t.n);
+const tipo = t => lc(t.tp||"");
+const isPM = t => has(tipo(t),"pamt","multa");
+const isPS = t => has(tipo(t),"psdd","suspens");
+const isJD = t => has(tipo(t),"judicial");
+const isADM = t => isPM(t) || isPS(t);
+const st = t => lc(t.st||"");
+const stH = (t,...kw) => { const s = st(t); return kw.some(k => s.includes(lc(k))); };
+const today = new Date();
+
+// Normaliza órgão
+function normOrg(v) {
+    const s = lc(v);
+    if(!v||!s||s==="nan") return "Sem órgão";
+    if(s.includes("amc")) return "AMC Fortaleza";
+    if(s.includes("detran")&&(s.includes("-ce")||s.includes("- ce"))) return "DETRAN/CE";
+    if(s.includes("detran")&&s.includes("sp")) return "DETRAN-SP";
+    if(s.includes("detran")&&s.includes("rn")) return "DETRAN-RN";
+    if(s.includes("detran")&&s.includes("pi")) return "DETRAN-PI";
+    if(s.includes("detran")&&s.includes("pb")) return "DETRAN-PB";
+    if(s.includes("detran")&&s.includes("pe")) return "DETRAN-PE";
+    if(s.includes("detran")) return "Outros DETRANs";
+    if(s.includes("prf")) return "PRF";
+    if(s.includes("demutran")) return "DEMUTRAN";
+    if(s.includes("pref")) return "Prefeituras";
+    if(s.includes("dnit")) return "DNIT";
+    if(s.includes("der")) return "DER-SP";
+    return v;
+}
+
+// Normaliza infração ADM por ESPÉCIE
+function normEspecieADM(t) {
+    const inf = lc(t.inf||"");
+    if(!inf||inf==="nan") return "Sem espécie";
+    if(inf.includes("recusa")||inf.includes("bafômetro")||inf.includes("bafometro")||inf.includes("alcool")||inf.includes("influên")) return "Lei Seca";
+    if(inf.includes("capacete")) return "Sem Capacete";
+    if(inf.includes("manobra")) return "Manobra Perigosa";
+    if(inf.includes("arrancada")) return "Arrancada Brusca";
+    if(inf.includes("velocidade")||inf.includes("50%")) return "Velocidade +50%";
+    if(inf.includes("forç")||inf.includes("forc")||inf.includes("passagem")) return "Forçar Passagem";
+    if(inf.includes("estacion")||inf.includes("vaga")) return "Estacionamento";
+    if(inf.includes("ultrapass")) return "Ultrapassar Contramão";
+    if(inf.includes("desobedecer")) return "Desobedecer Agente";
+    if(inf.includes("cnh")||inf.includes("licenciamento")||inf.includes("vencid")) return "CNH/Licenciamento";
+    if(inf.includes("indicação")||inf.includes("indicac")) return "Indicação de Condutor";
+    if(inf.includes("7455")) return "Sem Categoria (7455)";
+    return "Outras infrações";
+}
+
+// Normaliza espécie judicial pela coluna 'pjt' (Tema Central)
+function normEspeciePJ(t) {
+    const pjt = lc(t.pjt||"");
+    if(!pjt||pjt==="nan") return "Sem tema";
+    if(pjt.includes("transferencia") && pjt.includes("pontos")) return "Transf. Pontos + PPD";
+    if(pjt.includes("transferência retroativa")||pjt.includes("transferencia retroativa")) return "Transf. Retroativa Veículo";
+    if(pjt.includes("anulatoria") && pjt.includes("multa")) return "Anulatória Multa";
+    if(pjt.includes("anulatoria") && pjt.includes("psdd")) return "Anulatória PSDD";
+    if(pjt.includes("mandado")) return "Mandado de Segurança";
+    if(pjt.includes("cumprimento")) return "Cumprimento Sentença";
+    if(pjt.includes("obtencao") || pjt.includes("obtenção")) return "Obtenção CNH";
+    if(pjt.includes("abstencao") || pjt.includes("abstenção")) return "Abstenção PSDD";
+    if(pjt.includes("reativar")) return "Reativar CNH";
+    if(pjt === "outro") return "Outros temas";
+    return pjt.charAt(0).toUpperCase() + pjt.slice(1);
+}
+
+// Cores por espécie ADM
+const COR_ESPECIE_ADM = {
+    "Lei Seca": "color-pink",
+    "Sem Capacete": "color-amber",
+    "Manobra Perigosa": "color-purple",
+    "Arrancada Brusca": "color-coral",
+    "Velocidade +50%": "color-red",
+    "Forçar Passagem": "color-teal",
+    "Estacionamento": "color-blue",
+    "Ultrapassar Contramão": "color-purple",
+    "Desobedecer Agente": "color-coral",
+    "CNH/Licenciamento": "color-blue",
+    "Indicação de Condutor": "color-amber",
+    "Sem Categoria (7455)": "color-gray",
+    "Outras infrações": "color-gray",
+    "Sem espécie": "color-gray"
+};
+const COR_ESPECIE_PJ = {
+    "Transf. Pontos + PPD": "color-purple",
+    "Transf. Retroativa Veículo": "color-teal",
+    "Anulatória Multa": "color-blue",
+    "Anulatória PSDD": "color-coral",
+    "Mandado de Segurança": "color-pink",
+    "Cumprimento Sentença": "color-green",
+    "Obtenção CNH": "color-amber",
+    "Abstenção PSDD": "color-red",
+    "Reativar CNH": "color-teal",
+    "Outros temas": "color-gray",
+    "Sem tema": "color-gray"
+};
+
+// ═════════════════════════════════════════════════════════
+// CÁLCULOS
+// ═════════════════════════════════════════════════════════
+const adm = tasks.filter(isADM);
+const pm = tasks.filter(isPM);
+const ps = tasks.filter(isPS);
+const jd = tasks.filter(isJD);
+
+// Prazos
+function parsePrazo(t) {
+    if(!t.pr) return null;
+    const d = new Date(t.pr);
+    return isNaN(d) ? null : d;
+}
+function diasAteHoje(d) {
+    if(!d) return null;
+    return Math.ceil((d - today) / 86400000);
+}
+
+const prazosAdm = adm.map(t => ({...t, _pd:parsePrazo(t), _dias:diasAteHoje(parsePrazo(t))}));
+const prazosJd = jd.map(t => ({...t, _pd:parsePrazo(t), _dias:diasAteHoje(parsePrazo(t))}));
+const prazosAll = [...prazosAdm, ...prazosJd];
+
+const abertos = prazosAll.filter(t => t._dias !== null && t._dias >= 0);
+const atrasados = prazosAll.filter(t => t._dias !== null && t._dias < 0);
+
+// Espécies ADM e contagens
+const especiesAdm = {};
+adm.forEach(t => {
+    const e = normEspecieADM(t);
+    if(!especiesAdm[e]) especiesAdm[e] = {total:0, dp:0, jari:0, cetran:0, vit:0, arq:0, items:[]};
+    especiesAdm[e].total++;
+    especiesAdm[e].items.push(t);
+    if(stH(t,"01-","defesa prévia","defesa previa")) especiesAdm[e].dp++;
+    if(stH(t,"02-","aguardando julgamento dp","aguardando dp")) especiesAdm[e].dp++;
+    if(stH(t,"03-","recurso jari","04-","aguardando jari")) especiesAdm[e].jari++;
+    if(stH(t,"05-","recurso cetran","06-","aguardando cetran")) especiesAdm[e].cetran++;
+    if(stH(t,"07-","vitória","vitoria","sentença procedente")) especiesAdm[e].vit++;
+    if(stH(t,"08-","arquivado","encerrado","sentença improcedente")) especiesAdm[e].arq++;
+});
+
+// Espécies Judiciais
+const especiesPj = {};
+jd.forEach(t => {
+    const e = normEspeciePJ(t);
+    if(!especiesPj[e]) especiesPj[e] = {total:0, conf:0, prot:0, lim:0, sent:0, cump:0, items:[]};
+    especiesPj[e].total++;
+    especiesPj[e].items.push(t);
+    if(stH(t,"01","confecção","confeccao","p. inicial") && !t.pjn) especiesPj[e].conf++;
+    if(t.pjn) especiesPj[e].prot++;
+    if(isSim(t.p6)) especiesPj[e].lim++;
+    if(stH(t,"sentença procedente","sentença improcedente") || t.p11) especiesPj[e].sent++;
+    if(isSim(t.p13)) especiesPj[e].cump++;
+});
+
+// Funis
+const funilAdm = {
+    "DP — PAMT": pm.filter(t => stH(t,"01-","defesa prévia") || stH(t,"02-","aguardando julgamento dp")).length,
+    "DP — PSDD": ps.filter(t => stH(t,"01-","defesa prévia") || stH(t,"02-","aguardando")).length,
+    "Recurso JARI": adm.filter(t => stH(t,"03-","recurso jari","04-","aguardando jari")).length,
+    "Recurso CETRAN": adm.filter(t => stH(t,"05-","recurso cetran","06-","aguardando cetran")).length,
+    "Vitória": adm.filter(t => stH(t,"07-","vitória","vitoria")).length,
+    "Arquivado": adm.filter(t => stH(t,"08-","arquivado","encerrado")).length
+};
+const funilJd = {
+    "Confecção P. Inicial": jd.filter(t => stH(t,"confecção","confeccao","p. inicial") && !t.pjn).length,
+    "Protocolada": jd.filter(t => t.pjn).length,
+    "Liminar deferida": jd.filter(t => isSim(t.p6)||has(t.p6,"deferid")).length,
+    "Sentença": jd.filter(t => stH(t,"sentença procedente","sentença improcedente")).length,
+    "Cumprida/Finalizada": jd.filter(t => isSim(t.p13)).length
+};
+
+// Mensal
+const meses = ["Dezembro","Janeiro","Fevereiro","Marco","Abril","Maio"];
+const mensalAdm = {};
+const mensalJd = {};
+meses.forEach(m => {
+    mensalAdm[m] = adm.filter(t => t.m === m).length;
+    mensalJd[m] = jd.filter(t => t.m === m).length;
+});
+
+// Produzidos vs A Produzir (apuração)
+const judProduzidos = jd.filter(t => t.pjn).length;
+const judConfP3 = 3; // Jeferson Alves, Moises Almeida, Gabriel da Silva (em produção parada)
+const judRescindidos = jd.filter(t => has(t.pjs,"rescindido")).length;
+const judSemP3 = jd.length - judProduzidos - judConfP3 - judRescindidos;
+
+// ═════════════════════════════════════════════════════════
+// RENDER
+// ═════════════════════════════════════════════════════════
+const app = document.getElementById('app');
+
+function renderHeader() {
+    return `<div class="hdr">
+<div class="hdr-top">
+<div class="logo">⚖</div>
+<div style="flex:1">
+<h1>Dashboard jurídico — H.A. Advocacia <span>● ${tasks.length} registros</span></h1>
+<p>Central do Cliente · Dez/2025 → Mai/2026 · Gerado em ${today.toLocaleDateString('pt-BR')}</p>
+</div>
+<div class="hdr-actions">
+<button class="btn-export" onclick="exportXLSX()">📥 Exportar XLSX</button>
+</div>
+</div>
+<div class="tabs">
+<button class="tab active" onclick="switchTab('adm')" id="tab-adm" style="--accent:var(--pm);--tab-bg:var(--pm-bg);--tab-c:var(--pm-t)">📋 Administrativo <span class="cnt">${adm.length}</span></button>
+<button class="tab" onclick="switchTab('pj')" id="tab-pj" style="--accent:var(--jr);--tab-bg:var(--jr-bg);--tab-c:var(--jr-t)">⚖️ Judicial <span class="cnt">${jd.length}</span></button>
+<button class="tab" onclick="switchTab('abertos')" id="tab-abertos" style="--accent:var(--pm);--tab-bg:var(--pm-bg);--tab-c:var(--pm-t)">⏰ Prazos abertos <span class="cnt">${abertos.length}</span></button>
+<button class="tab danger" onclick="switchTab('atrasados')" id="tab-atrasados" style="--accent:var(--dn)">🚨 Atrasados <span class="cnt">${atrasados.length}</span></button>
+<button class="tab" onclick="switchTab('produzidos')" id="tab-produzidos" style="--accent:var(--ct);--tab-bg:var(--ct-bg);--tab-c:var(--ct-t)">✅ Produzidos vs a produzir <span class="cnt">${judProduzidos}/${jd.length}</span></button>
+<button class="tab" onclick="switchTab('mensal')" id="tab-mensal" style="--accent:var(--gr);--tab-bg:var(--gr-bg);--tab-c:var(--gr-t)">📊 Visão geral</button>
+</div></div>`;
+}
+
+function renderEspeciesGrid(especies, corMap, tipo) {
+    const sorted = Object.entries(especies).sort((a,b) => b[1].total - a[1].total);
+    const max = Math.max(...sorted.map(([,v]) => v.total), 1);
+    return `<div class="species-grid">${sorted.map(([nome, dados]) => {
+        const cor = corMap[nome] || "color-gray";
+        const pct = (dados.total / max) * 100;
+        const subInfo = tipo === 'adm' 
+            ? `${dados.dp} em DP · ${dados.jari} JARI · ${dados.vit} vit.`
+            : `${dados.conf} produção · ${dados.prot} protoc. · ${dados.sent} sent.`;
+        return `<div class="sc ${cor}" onclick="filtrarPorEspecie('${tipo}','${nome.replace(/'/g,"\\'")}')">
+<div class="sc-label">${nome}</div>
+<div class="sc-val">${dados.total}</div>
+<div class="sc-bar"><div class="sc-bar-fill" style="width:${pct}%"></div></div>
+<div class="sc-sub">${subInfo}</div>
+</div>`;
+    }).join('')}</div>`;
+}
+
+function renderStackedBars(especies, tipo) {
+    const sorted = Object.entries(especies).sort((a,b) => b[1].total - a[1].total);
+    if(tipo === 'adm') {
+        const segments = [
+            {key:'dp', label:'em DP', color:'#378ADD'},
+            {key:'jari', label:'JARI', color:'#7F77DD'},
+            {key:'cetran', label:'CETRAN', color:'#1D9E75'},
+            {key:'vit', label:'Vitória', color:'#639922'},
+            {key:'arq', label:'Arquivado', color:'#888780'}
+        ];
+        return `<div class="card">
+<div class="card-title">📋 Distribuição por etapa — administrativo</div>
+${sorted.map(([nome, dados]) => {
+    const segs = segments.map(seg => {
+        const val = dados[seg.key] || 0;
+        if(val === 0) return '';
+        const pct = (val/dados.total)*100;
+        return `<div class="stacked-seg" style="width:${pct}%;background:${seg.color}" title="${seg.label}: ${val}">${pct > 6 ? val : ''}</div>`;
+    }).join('');
+    return `<div class="stacked-row">
+<div class="stacked-row-header"><span class="stacked-row-label">${nome}</span><span class="stacked-row-total">${dados.total}</span></div>
+<div class="stacked-bar">${segs || `<div class="stacked-seg" style="width:100%;background:#D3D1C7;color:#444441">Sem etapa registrada</div>`}</div>
+</div>`;
+}).join('')}
+<div class="legend">${segments.map(s => `<span class="legend-item"><span class="legend-dot" style="background:${s.color}"></span>${s.label}</span>`).join('')}</div>
+</div>`;
+    } else {
+        const segments = [
+            {key:'conf', label:'Em produção', color:'#EF9F27'},
+            {key:'prot', label:'Protocolado', color:'#7F77DD'},
+            {key:'lim', label:'Liminar', color:'#534AB7'},
+            {key:'sent', label:'Sentença', color:'#1D9E75'},
+            {key:'cump', label:'Cumprida', color:'#639922'}
+        ];
+        return `<div class="card">
+<div class="card-title">⚖️ Distribuição por etapa — judicial</div>
+${sorted.map(([nome, dados]) => {
+    const segs = segments.map(seg => {
+        const val = dados[seg.key] || 0;
+        if(val === 0) return '';
+        const pct = (val/dados.total)*100;
+        return `<div class="stacked-seg" style="width:${pct}%;background:${seg.color}" title="${seg.label}: ${val}">${pct > 8 ? val : ''}</div>`;
+    }).join('');
+    return `<div class="stacked-row">
+<div class="stacked-row-header"><span class="stacked-row-label">${nome}</span><span class="stacked-row-total">${dados.total}</span></div>
+<div class="stacked-bar">${segs || `<div class="stacked-seg" style="width:100%;background:#D3D1C7;color:#444441">Sem etapa registrada</div>`}</div>
+</div>`;
+}).join('')}
+<div class="legend">${segments.map(s => `<span class="legend-item"><span class="legend-dot" style="background:${s.color}"></span>${s.label}</span>`).join('')}</div>
+</div>`;
+    }
+}
+
+function renderFunil(funilData, accent) {
+    const max = Math.max(...Object.values(funilData), 1);
+    return Object.entries(funilData).map(([label, val]) => {
+        const pct = (val/max)*100;
+        return `<div class="hbar-row">
+<div class="hbar-label">${label}</div>
+<div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(pct,2)}%;background:${accent}">${pct > 8 ? val : ''}</div></div>
+<div class="hbar-num">${val}</div>
+</div>`;
+    }).join('');
+}
+
+function renderTabela(items, showTipo) {
+    if(!items.length) return `<div class="empty-state">Nenhum item encontrado.</div>`;
+    return `<table>
+<thead><tr>
+<th>Cliente</th><th>Mês</th>${showTipo ? '<th>Tipo</th>' : ''}<th>Espécie/Infração</th><th>Órgão</th><th>Prazo</th><th>Status</th>
+</tr></thead>
+<tbody>${items.map(t => {
+    const tipoLabel = isJD(t) ? 'PJ' : isPS(t) ? 'PSDD' : 'PAMT';
+    const tipoClass = isJD(t) ? 'badge-judicial' : isPS(t) ? 'badge-psdd' : 'badge-pamt';
+    const especie = isJD(t) ? normEspeciePJ(t) : normEspecieADM(t);
+    const prazo = t._pd ? t._pd.toLocaleDateString('pt-BR') : '—';
+    let dlClass = 'dl-neutro', dlTxt = '—';
+    if(t._dias !== null && t._dias !== undefined) {
+        if(t._dias < 0) { dlClass = 'dl-vencido'; dlTxt = Math.abs(t._dias)+'d atraso'; }
+        else if(t._dias < 15) { dlClass = 'dl-proximo'; dlTxt = t._dias+'d'; }
+        else { dlClass = 'dl-ok'; dlTxt = t._dias+'d'; }
+    }
+    return `<tr>
+<td style="font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.n}">${t.n}</td>
+<td style="color:var(--t2);font-size:10px">${t.m||'—'}</td>
+${showTipo ? `<td><span class="type-badge ${tipoClass}">${tipoLabel}</span></td>` : ''}
+<td style="font-size:10px;color:var(--t2)">${especie}</td>
+<td style="font-size:10px;color:var(--t2)">${normOrg(t.og||'')}</td>
+<td style="font-size:10px">${prazo}</td>
+<td><span class="deadline-badge ${dlClass}">${dlTxt}</span></td>
+</tr>`;
+}).join('')}
+</tbody></table>`;
+}
+
+// ═════════════════════════════════════════════════════════
+// ABAS
+// ═════════════════════════════════════════════════════════
+function renderAdm() {
+    const dpAdm = adm.filter(t => stH(t,"01-","defesa prévia") || stH(t,"02-","aguardando")).length;
+    const vitAdm = adm.filter(t => stH(t,"07-","vitória")).length;
+    const arqAdm = adm.filter(t => stH(t,"08-","arquivado","encerrado")).length;
+    const semInfo = adm.filter(t => !t.og || !t.inf || lc(t.og)==="nan" || lc(t.inf)==="nan").length;
+    
+    return `<div class="content active" id="content-adm">
+<div class="metrics-grid">
+<div class="mc info"><label>PAMT (Multas)</label><div class="val">${pm.length}</div></div>
+<div class="mc" style="--c:var(--ps);background:var(--ps-bg);border-color:var(--ps)"><label>PSDD (Suspensão)</label><div class="val" style="color:var(--ps-t)">${ps.length}</div></div>
+<div class="mc warn"><label>Aguardando julgamento</label><div class="val">${dpAdm}</div></div>
+<div class="mc ok"><label>Vitórias</label><div class="val">${vitAdm}</div></div>
+<div class="mc danger"><label>Arquivados</label><div class="val">${arqAdm}</div></div>
+<div class="mc"><label>Sem Órgão/AIT</label><div class="val">${semInfo}</div></div>
+</div>
+
+<div class="section-title">🎯 Espécies de ações administrativas (clique para filtrar)</div>
+${renderEspeciesGrid(especiesAdm, COR_ESPECIE_ADM, 'adm')}
+
+${renderStackedBars(especiesAdm, 'adm')}
+
+<div class="card">
+<div class="card-title">📊 Funil administrativo geral</div>
+${renderFunil(funilAdm, 'var(--pm)')}
+</div>
+
+<div class="section-title">📋 Clientes administrativos (filtrável)</div>
+<div class="filter-bar" id="filter-adm">
+<span class="filter-chip active" onclick="filtrarPorEspecie('adm','TODOS')">Todos (${adm.length})</span>
+${Object.entries(especiesAdm).sort((a,b)=>b[1].total-a[1].total).slice(0,8).map(([e,d]) => `<span class="filter-chip" onclick="filtrarPorEspecie('adm','${e.replace(/'/g,"\\'")}')">${e} (${d.total})</span>`).join('')}
+</div>
+<div id="tabela-adm">${renderTabela(adm.slice(0,500), true)}</div>
+</div>`;
+}
+
+function renderPj() {
+    const protocolados = jd.filter(t => t.pjn).length;
+    const semP3 = judSemP3;
+    const taxa = jd.length > 0 ? Math.round((protocolados/jd.length)*100) : 0;
+    
+    return `<div class="content" id="content-pj">
+<div class="metrics-grid">
+<div class="mc judicial"><label>Total judicial</label><div class="val">${jd.length}</div></div>
+<div class="mc ok"><label>Protocolados</label><div class="val">${protocolados}</div></div>
+<div class="mc warn"><label>Em produção</label><div class="val">${judConfP3}</div></div>
+<div class="mc danger"><label>Sem cadastro P3</label><div class="val">${semP3}</div></div>
+<div class="mc info"><label>Taxa cobertura</label><div class="val">${taxa}%</div></div>
+</div>
+
+<div class="section-title">🎯 Espécies de ações judiciais (clique para filtrar)</div>
+${renderEspeciesGrid(especiesPj, COR_ESPECIE_PJ, 'pj')}
+
+${renderStackedBars(especiesPj, 'pj')}
+
+<div class="card">
+<div class="card-title">⚖️ Funil judicial geral</div>
+${renderFunil(funilJd, 'var(--jr)')}
+</div>
+
+<div class="section-title">📋 Clientes judiciais (filtrável)</div>
+<div class="filter-bar" id="filter-pj">
+<span class="filter-chip active" onclick="filtrarPorEspecie('pj','TODOS')">Todos (${jd.length})</span>
+${Object.entries(especiesPj).sort((a,b)=>b[1].total-a[1].total).slice(0,8).map(([e,d]) => `<span class="filter-chip" onclick="filtrarPorEspecie('pj','${e.replace(/'/g,"\\'")}')">${e} (${d.total})</span>`).join('')}
+</div>
+<div id="tabela-pj">${renderTabela(jd.slice(0,500), false)}</div>
+</div>`;
+}
+
+function renderAbertos() {
+    const futuros = abertos.sort((a,b) => a._dias - b._dias);
+    const proximos = futuros.filter(t => t._dias < 15).length;
+    return `<div class="content" id="content-abertos">
+<div class="metrics-grid">
+<div class="mc info"><label>Total em aberto</label><div class="val">${futuros.length}</div></div>
+<div class="mc warn"><label>≤ 15 dias</label><div class="val">${proximos}</div></div>
+<div class="mc ok"><label>> 15 dias</label><div class="val">${futuros.length - proximos}</div></div>
+</div>
+<div class="summary-note">Prazos com data definida e ainda não vencidos. <strong>Amarelo</strong> = vence em ≤ 15 dias. <strong>Azul</strong> = mais distante.</div>
+${renderTabela(futuros.slice(0,500), true)}
+</div>`;
+}
+
+function renderAtrasados() {
+    const venc = atrasados.sort((a,b) => a._dias - b._dias);
+    const muitoVencidos = venc.filter(t => t._dias < -30).length;
+    return `<div class="content" id="content-atrasados">
+<div class="metrics-grid">
+<div class="mc danger"><label>Total vencidos</label><div class="val">${venc.length}</div></div>
+<div class="mc danger"><label>+ de 30 dias</label><div class="val">${muitoVencidos}</div></div>
+<div class="mc warn"><label>Até 30 dias</label><div class="val">${venc.length - muitoVencidos}</div></div>
+</div>
+<div class="summary-note" style="border-color:var(--dn);background:var(--dn-bg);color:var(--dn-t)">🚨 <strong>Atenção:</strong> prazos vencidos. Ordenados do mais antigo para o mais recente.</div>
+${renderTabela(venc.slice(0,500), true)}
+</div>`;
+}
+
+function renderProduzidos() {
+    const total = jd.length;
+    const protPct = (judProduzidos/total)*100;
+    const confPct = (judConfP3/total)*100;
+    const rescPct = (judRescindidos/total)*100;
+    const semPct = (judSemP3/total)*100;
+    
+    const semProtocolo = jd.filter(t => !t.pjn);
+    const comProtocolo = jd.filter(t => t.pjn);
+    
+    return `<div class="content" id="content-produzidos">
+<div class="metrics-grid">
+<div class="mc ok"><label>✅ Produzidos</label><div class="val">${judProduzidos}</div><div class="sub">com nº de processo</div></div>
+<div class="mc warn"><label>🟡 Em produção</label><div class="val">${judConfP3}</div><div class="sub">cadastrados sem nº</div></div>
+<div class="mc"><label>⚙️ Casos especiais</label><div class="val">${judRescindidos}</div><div class="sub">rescindidos/etc</div></div>
+<div class="mc danger"><label>🔴 A produzir</label><div class="val">${judSemP3}</div><div class="sub">sem cadastro P3</div></div>
+</div>
+
+<div class="card">
+<div class="card-title">📊 Proporção produzidos vs a produzir (${total} ações judiciais)</div>
+<div style="display:flex;height:30px;border-radius:6px;overflow:hidden;margin-bottom:10px">
+<div style="width:${protPct}%;background:#1D9E75;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">${judProduzidos} produzidos</div>
+<div style="width:${confPct}%;background:#EF9F27;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">${judConfP3}</div>
+<div style="width:${rescPct}%;background:#888780;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">${judRescindidos}</div>
+<div style="width:${semPct}%;background:#E24B4A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">${judSemP3} a produzir</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;font-size:12px;margin-top:10px">
+<div style="display:flex;justify-content:space-between;border-left:3px solid #1D9E75;padding:6px 10px;background:#E1F5EE;border-radius:0 4px 4px 0"><span style="font-weight:600;color:#085041">✅ Produzidos com nº de processo</span><span style="font-weight:700;color:#085041">${judProduzidos}</span></div>
+<div style="display:flex;justify-content:space-between;border-left:3px solid #EF9F27;padding:6px 10px;background:#FAEEDA;border-radius:0 4px 4px 0"><span style="font-weight:600;color:#633806">🟡 Cadastrados na P3 sem protocolo</span><span style="font-weight:700;color:#633806">${judConfP3}</span></div>
+<div style="display:flex;justify-content:space-between;border-left:3px solid #888780;padding:6px 10px;background:#F1EFE8;border-radius:0 4px 4px 0"><span style="font-weight:600;color:#444441">⚙️ Casos especiais (rescindidos/recuperação)</span><span style="font-weight:700;color:#444441">${judRescindidos}</span></div>
+<div style="display:flex;justify-content:space-between;border-left:3px solid #E24B4A;padding:6px 10px;background:#FCEBEB;border-radius:0 4px 4px 0"><span style="font-weight:600;color:#791F1F">🔴 Sem cadastro algum na P3</span><span style="font-weight:700;color:#791F1F">${judSemP3}</span></div>
+</div>
+</div>
+
+<div class="section-title">✅ Já produzidos (${comProtocolo.length}) — com nº de processo</div>
+${renderTabela(comProtocolo.slice(0,500), false)}
+
+<div class="section-title" style="color:var(--dn-t);margin-top:20px">🔴 A produzir (${semProtocolo.length}) — sem nº de processo</div>
+${renderTabela(semProtocolo.slice(0,500), false)}
+</div>`;
+}
+
+function renderMensal() {
+    const maxAdm = Math.max(...Object.values(mensalAdm));
+    const maxJd = Math.max(...Object.values(mensalJd));
+    const max = Math.max(maxAdm, maxJd, 1);
+    
+    return `<div class="content" id="content-mensal">
+<div class="metrics-grid">
+<div class="mc info"><label>Total geral</label><div class="val">${tasks.length}</div></div>
+<div class="mc"><label>Total ADM</label><div class="val">${adm.length}</div></div>
+<div class="mc judicial"><label>Total Judicial</label><div class="val">${jd.length}</div></div>
+<div class="mc"><label>Meses</label><div class="val">6</div></div>
+</div>
+
+<div class="card">
+<div class="card-title">📅 Evolução mensal — total de tarefas</div>
+<div class="month-bars">${meses.map((m, i) => {
+    const total = mensalAdm[m] + mensalJd[m];
+    const h = (total/max)*100;
+    const isCurrent = m === 'Maio';
+    return `<div class="month-bar"><div class="month-bar-val">${total}</div><div class="month-bar-fill ${isCurrent ? 'month-bar-current' : ''}" style="height:${h}%"></div><div class="month-bar-label">${m.slice(0,3)}/${m === 'Dezembro' ? '25' : '26'}</div></div>`;
+}).join('')}</div>
+</div>
+
+<div class="card">
+<div class="card-title">📊 Distribuição mensal por tipo (ADM vs Judicial)</div>
+${meses.map(m => {
+    const a = mensalAdm[m];
+    const j = mensalJd[m];
+    const t = a + j;
+    const aPct = t > 0 ? (a/t)*100 : 0;
+    const jPct = t > 0 ? (j/t)*100 : 0;
+    return `<div class="stacked-row">
+<div class="stacked-row-header"><span class="stacked-row-label">${m}/${m === 'Dezembro' ? '25' : '26'}</span><span class="stacked-row-total">${t} tarefas</span></div>
+<div class="stacked-bar">
+${a > 0 ? `<div class="stacked-seg" style="width:${aPct}%;background:#378ADD" title="ADM: ${a}">${a} ADM</div>` : ''}
+${j > 0 ? `<div class="stacked-seg" style="width:${jPct}%;background:#7F77DD" title="Judicial: ${j}">${j} PJ</div>` : ''}
+</div>
+</div>`;
+}).join('')}
+<div class="legend">
+<span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>Administrativo</span>
+<span class="legend-item"><span class="legend-dot" style="background:#7F77DD"></span>Judicial</span>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">🎯 Top espécies no período — administrativo</div>
+${renderFunil(Object.fromEntries(Object.entries(especiesAdm).sort((a,b) => b[1].total - a[1].total).slice(0,8).map(([k,v]) => [k, v.total])), 'var(--pm)')}
+</div>
+
+<div class="card">
+<div class="card-title">⚖️ Top espécies no período — judicial</div>
+${renderFunil(Object.fromEntries(Object.entries(especiesPj).sort((a,b) => b[1].total - a[1].total).slice(0,8).map(([k,v]) => [k, v.total])), 'var(--jr)')}
+</div>
+
+<div class="summary-note">
+<strong>Resumo do período Dez/2025 → Mai/2026:</strong><br>
+• Total de tarefas: ${tasks.length} (${adm.length} administrativas + ${jd.length} judiciais)<br>
+• Mês com maior volume: ${Object.entries({...mensalAdm}).map(([m,v])=>[m,v+mensalJd[m]]).sort((a,b)=>b[1]-a[1])[0].join(' (')} tarefas)<br>
+• Taxa de produção judicial: ${Math.round((judProduzidos/jd.length)*100)}% (${judProduzidos} de ${jd.length} com processo protocolado)<br>
+• Prazos atrasados: ${atrasados.length} · Prazos em aberto: ${abertos.length}
+</div>
+</div>`;
+}
+
+// ═════════════════════════════════════════════════════════
+// INIT
+// ═════════════════════════════════════════════════════════
+app.innerHTML = renderHeader() + renderAdm() + renderPj() + renderAbertos() + renderAtrasados() + renderProduzidos() + renderMensal();
+
+function switchTab(t) {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.content').forEach(x => x.classList.remove('active'));
+    document.getElementById('tab-' + t).classList.add('active');
+    document.getElementById('content-' + t).classList.add('active');
+}
+
+function filtrarPorEspecie(tipo, especie) {
+    const items = tipo === 'adm' ? adm : jd;
+    let filtered;
+    if(especie === 'TODOS') filtered = items;
+    else filtered = items.filter(t => {
+        const e = tipo === 'adm' ? normEspecieADM(t) : normEspeciePJ(t);
+        return e === especie;
+    });
+    const tableId = 'tabela-' + tipo;
+    const el = document.getElementById(tableId);
+    if(el) el.innerHTML = renderTabela(filtered.slice(0,500), tipo === 'adm');
+    // Atualizar chips
+    const fb = document.getElementById('filter-' + tipo);
+    if(fb) {
+        fb.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        const chips = fb.querySelectorAll('.filter-chip');
+        chips.forEach(c => { if(c.textContent.includes(especie === 'TODOS' ? 'Todos' : especie)) c.classList.add('active'); });
+    }
+}
+
+function exportXLSX() {
+    // Exporta CSV simples (suportado pelo Excel)
+    let csv = "Mês;Cliente;Tipo;Espécie;Órgão;Status;Processo;Prazo\n";
+    tasks.forEach(t => {
+        const tipoLabel = isJD(t) ? 'Judicial' : isPS(t) ? 'PSDD' : 'PAMT';
+        const especie = isJD(t) ? normEspeciePJ(t) : normEspecieADM(t);
+        const linha = [
+            t.m || '',
+            (t.n || '').replace(/;/g, ','),
+            tipoLabel,
+            especie,
+            normOrg(t.og || ''),
+            (t.st || '').replace(/;/g, ','),
+            t.pjn || '',
+            t.pr || ''
+        ].join(';');
+        csv += linha + "\n";
+    });
+    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], {type: 'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dashboard-juridico-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+</script>
+<footer style="text-align:center;padding:20px;color:var(--t3);font-size:11px;border-top:1px solid var(--bd);margin-top:20px">
+Dashboard Jurídico · <strong style="color:var(--t1)">H.A. Advocacia Especializada em Trânsito</strong> · 
+<a href="https://henriqueaugusto.adv.br/" style="color:var(--pm);text-decoration:none">henriqueaugusto.adv.br</a><br>
+<span style="font-size:10px">Gerado automaticamente · Fonte: ClickUp Central do Cliente · Atualização sob demanda</span>
+</footer>
+</body>
+</html>
